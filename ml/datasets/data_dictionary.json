@@ -1,0 +1,10 @@
+{
+  "dataset_name": "Synthetic PCOS/PMOS Research Cohort",
+  "version": "1.0-synthetic",
+  "description": "Synthetic dataset modeling menstrual irregularity, hyperandrogenism, and metabolic indicators.",
+  "sample_count": 500,
+  "target_variable": "synthetic_phenotype_flag (0 = typical reference pattern, 1 = simulated PCOS/PMOS pattern)",
+  "synthetic_status": true,
+  "intended_use": "Software pipeline testing, feature transformation verification, and non-clinical demonstrations.",
+  "prohibited_use": "Direct clinical diagnosis, patient risk stratification, or clinical device submissions."
+}

@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: cycleaware_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: cycleaware_user
+      POSTGRES_PASSWORD: cycleaware_secure_password
+      POSTGRES_DB: cycleaware_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7-alpine
+    container_name: cycleaware_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: cycleaware_backend
+    restart: unless-stopped
+    depends_on:
+      - db
+      - redis
+    environment:
+      APP_ENV: production
+      DATABASE_URL: postgresql+psycopg://cycleaware_user:cycleaware_secure_password@db:5432/cycleaware_db
+      REDIS_URL: redis://redis:6379/0
+      SECRET_KEY: ${SECRET_KEY:-prod_secret_key_minimum_32_bytes_random}
+      JWT_SECRET: ${JWT_SECRET:-prod_jwt_secret_minimum_32_bytes_random}
+      FILE_STORAGE_PATH: /app/private_uploads
+      CLINICAL_ML_ENABLED: "false"
+      EXPERIMENTAL_ML_ENABLED: "true"
+    volumes:
+      - ./backend/private_uploads:/app/private_uploads
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: cycleaware_frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+
+volumes:
+  postgres_data:
