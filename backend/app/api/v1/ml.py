@@ -12,6 +12,18 @@ from app.core.config import settings
 
 router = APIRouter(prefix="/ml", tags=["Machine Learning & AI Transparency"])
 
+def _find_model_file(filename: str) -> Optional[str]:
+    candidates = [
+        os.path.join(os.getcwd(), "ml", "model_registry", filename),
+        os.path.join(os.path.dirname(__file__), "..", "..", "..", "ml", "model_registry", filename),
+        os.path.join("/app", "ml", "model_registry", filename),
+        os.path.join("ml", "model_registry", filename)
+    ]
+    for path in candidates:
+        if os.path.exists(path):
+            return path
+    return None
+
 class ExperimentalInferenceRequest(BaseModel):
     age: float
     years_post_menarche: float
@@ -28,8 +40,8 @@ class ExperimentalInferenceRequest(BaseModel):
 @router.get("/models")
 def get_model_registry(current_user: User = Depends(get_current_active_user)):
     """Retrieve the model registry, performance metrics, and safety flags."""
-    reg_path = os.path.join("ml", "model_registry", "registry.json")
-    if os.path.exists(reg_path):
+    reg_path = _find_model_file("registry.json")
+    if reg_path and os.path.exists(reg_path):
         with open(reg_path, "r") as f:
             data = json.load(f)
             return data
@@ -47,10 +59,10 @@ def run_experimental_inference(
     if not settings.EXPERIMENTAL_ML_ENABLED:
         raise HTTPException(status_code=403, detail="Experimental ML is disabled by system policy.")
 
-    model_path = os.path.join("ml", "model_registry", "experimental_rf_v1.joblib")
-    reg_path = os.path.join("ml", "model_registry", "registry.json")
+    model_path = _find_model_file("experimental_rf_v1.joblib")
+    reg_path = _find_model_file("registry.json")
 
-    if not os.path.exists(model_path):
+    if not model_path or not os.path.exists(model_path):
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="Experimental model binary is not loaded."

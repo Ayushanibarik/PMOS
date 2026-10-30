@@ -27,7 +27,7 @@ class PatientSharingPermission(Base):
     
     access_code = Column(String(50), nullable=False, index=True)
     sharing_scope = Column(String(50), default="full", nullable=False) # full, cycles_only, labs_only, summary_only
-    valid_until = Column(String(20), nullable=False) # ISO datetime or date
+    valid_until = Column(String(64), nullable=False) # ISO datetime or date
     is_revoked = Column(Boolean, default=False, nullable=False)
     revoked_at = Column(DateTime, nullable=True)
     

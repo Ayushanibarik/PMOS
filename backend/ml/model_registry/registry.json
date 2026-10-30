@@ -1,0 +1,58 @@
+{
+  "models": [
+    {
+      "model_id": "EXP-RF-001",
+      "model_name": "Experimental Random Forest Phenotype Screening Prototype",
+      "version": "1.0.0-research",
+      "training_dataset": "synthetic_pcos_pmos_research_dataset.csv (N=500)",
+      "dataset_licence": "Internal Synthetic Research License",
+      "created_at": "2026-10-30T18:58:41.806072+00:00",
+      "algorithm": "RandomForestClassifier(n_estimators=100, max_depth=5)",
+      "features": [
+        "age",
+        "years_post_menarche",
+        "mean_cycle_length",
+        "cycle_length_std",
+        "skipped_cycles_per_year",
+        "hirsutism_score",
+        "acne_severity",
+        "hair_thinning_severity",
+        "bmi",
+        "waist_cm",
+        "fasting_glucose"
+      ],
+      "feature_importances": {
+        "cycle_length_std": 0.3582,
+        "skipped_cycles_per_year": 0.1914,
+        "mean_cycle_length": 0.1626,
+        "hirsutism_score": 0.1036,
+        "hair_thinning_severity": 0.1034,
+        "acne_severity": 0.0322,
+        "bmi": 0.0198,
+        "fasting_glucose": 0.0164,
+        "waist_cm": 0.0083,
+        "years_post_menarche": 0.0024,
+        "age": 0.0018
+      },
+      "validation_method": "5-Fold Stratified Cross Validation",
+      "metrics": {
+        "roc_auc_mean": 1.0,
+        "accuracy_mean": 0.998,
+        "sensitivity_recall_mean": 0.9956,
+        "specificity_mean": 1.0,
+        "precision_mean": 1.0,
+        "f1_score_mean": 0.9978,
+        "brier_score_loss_mean": 0.0034
+      },
+      "calibration_status": "Brier score assessed; requires temperature scaling on external prospective data",
+      "intended_use": "Research feature analysis and algorithm demonstration only.",
+      "known_limitations": [
+        "Trained on synthetic data; uncalibrated on clinical populations.",
+        "Does not account for non-classic congenital adrenal hyperplasia (NCAH) bio-markers.",
+        "Must NEVER be deployed for patient-facing automated medical diagnosis."
+      ],
+      "approval_status": "experimental_research_only",
+      "is_enabled_for_clinical_use": false
+    }
+  ]
+}

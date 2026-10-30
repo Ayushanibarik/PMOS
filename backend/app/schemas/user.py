@@ -1,9 +1,9 @@
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, Field, ConfigDict, EmailStr
 from typing import Optional, List
 from datetime import datetime
 
 class UserRegister(BaseModel):
-    email: str = Field(min_length=3)
+    email: EmailStr
     password: str = Field(min_length=8)
     full_name: str = Field(min_length=2)
     role: str = "patient" # patient, clinician, researcher, asha_worker
