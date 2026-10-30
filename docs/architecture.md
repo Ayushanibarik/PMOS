@@ -54,3 +54,4 @@ CycleAware is structured as a **modular monolith** with strict separation of con
 - **Data Subject Rights (DPDP Act 2023)**: Complete JSON data export and account erasure endpoints.
 - **Patient-Controlled Sharing**: Time-limited and scope-restricted access codes for clinicians.
 - **Private Document Vault**: Uploaded PDFs and images are stored with UUID filenames outside the webroot; downloads enforce authenticated ownership verification.
+

@@ -127,3 +127,4 @@ export const PatternObservationsPage: React.FC = () => {
     </div>
   )
 }
+

@@ -11,6 +11,7 @@ import {
 } from 'lucide-react'
 import { api } from '../../services/api'
 import { MenstrualPeriod, CycleAnalytics } from '../../types'
+import { BetaDriftCard } from '../../components/cycles/BetaDriftCard'
 
 export const CycleTrackerPage: React.FC = () => {
   const [periods, setPeriods] = useState<MenstrualPeriod[]>([])
@@ -110,6 +111,9 @@ export const CycleTrackerPage: React.FC = () => {
           <span>Log New Period</span>
         </button>
       </div>
+
+      {/* U02: Rolling Beta-Drift Trend Indicator */}
+      <BetaDriftCard />
 
       {/* Calendar Component */}
       <div className="bg-white p-6 sm:p-8 rounded-3xl border border-ivory-300 shadow-subtle space-y-6">
@@ -390,3 +394,4 @@ export const CycleTrackerPage: React.FC = () => {
     </div>
   )
 }
+

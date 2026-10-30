@@ -30,3 +30,4 @@ export const MedicalDisclaimerBanner: React.FC = () => {
     </div>
   )
 }
+

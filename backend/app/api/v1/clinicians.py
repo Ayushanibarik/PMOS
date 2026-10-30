@@ -267,3 +267,4 @@ def get_clinician_notes(
     return db.query(ClinicianNote).filter(
         ClinicianNote.patient_id == patient_id
     ).order_by(ClinicianNote.created_at.desc()).all()
+

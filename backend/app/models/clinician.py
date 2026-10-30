@@ -49,3 +49,4 @@ class ClinicianNote(Base):
     referral_status = Column(String(50), default="none", nullable=True) # none, endocrinology, pelvic_ultrasound, metabolic_panel
 
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+

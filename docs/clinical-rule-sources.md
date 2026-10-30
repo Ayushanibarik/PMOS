@@ -20,3 +20,4 @@
    - *Citation*: WHO Expert Consultation. Appropriate body-mass index for Asian populations and its implications for policy and intervention strategies. *Lancet*. 2004;363(9403):157-163.
    - *Incorporated Logic*:
      - South Asian female waist circumference threshold: ≥80 cm.
+

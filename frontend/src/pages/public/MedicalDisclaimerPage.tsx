@@ -67,3 +67,4 @@ export const MedicalDisclaimerPage: React.FC = () => {
     </div>
   )
 }
+

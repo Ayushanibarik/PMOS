@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from typing import Optional, List
 from datetime import datetime
 
@@ -6,8 +6,7 @@ class UserRegister(BaseModel):
     email: str = Field(min_length=3)
     password: str = Field(min_length=8)
     full_name: str = Field(min_length=2)
-    role: str = "patient" # patient, clinician, researcher
-    # Initial onboarding / demographic data (optional at registration)
+    role: str = "patient" # patient, clinician, researcher, asha_worker
     country: Optional[str] = "India"
     preferred_language: Optional[str] = "en"
     age_confirmed: bool = True
@@ -40,12 +39,21 @@ class UserProfileUpdate(BaseModel):
     has_prior_pcos_diagnosis: Optional[bool] = None
     has_other_endocrine_condition: Optional[bool] = None
     using_hormonal_contraception: Optional[bool] = None
+    contraceptive_type: Optional[str] = None
+    contraceptive_name: Optional[str] = None
+    contraceptive_start_date: Optional[str] = None
+    contraceptive_discontinued_date: Optional[str] = None
     is_pregnant_postpartum: Optional[bool] = None
     is_breastfeeding: Optional[bool] = None
     medications_influencing_cycle: Optional[str] = None
+    body_neutral_mode: Optional[bool] = None
+    postprandial_fatigue_freq: Optional[str] = None
+    preferred_dialect: Optional[str] = None
     onboarding_completed: Optional[bool] = None
 
 class UserProfileResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: str
     user_id: str
     age: Optional[int] = None
@@ -62,15 +70,21 @@ class UserProfileResponse(BaseModel):
     has_prior_pcos_diagnosis: bool
     has_other_endocrine_condition: bool
     using_hormonal_contraception: bool
+    contraceptive_type: Optional[str] = None
+    contraceptive_name: Optional[str] = None
+    contraceptive_start_date: Optional[str] = None
+    contraceptive_discontinued_date: Optional[str] = None
     is_pregnant_postpartum: bool
     is_breastfeeding: bool
     medications_influencing_cycle: Optional[str] = None
+    body_neutral_mode: bool = False
+    postprandial_fatigue_freq: Optional[str] = None
+    preferred_dialect: str = "en"
     onboarding_completed: bool
 
-    class Config:
-        from_attributes = True
-
 class UserResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: str
     email: str
     full_name: str
@@ -78,9 +92,6 @@ class UserResponse(BaseModel):
     is_active: bool
     is_verified: bool
     profile: Optional[UserProfileResponse] = None
-
-    class Config:
-        from_attributes = True
 
 class ConsentUpdateItem(BaseModel):
     consent_type: str
@@ -90,11 +101,10 @@ class ConsentUpdateRequest(BaseModel):
     consents: List[ConsentUpdateItem]
 
 class ConsentResponseItem(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     consent_type: str
     is_granted: bool
     consent_version: str
     granted_at: datetime
     revoked_at: Optional[datetime] = None
-
-    class Config:
-        from_attributes = True

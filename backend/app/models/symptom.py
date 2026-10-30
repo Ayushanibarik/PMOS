@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime, timezone
-from sqlalchemy import Column, String, Integer, DateTime, ForeignKey, Text
+from sqlalchemy import Column, String, Integer, Float, Boolean, DateTime, ForeignKey, Text
 from app.db.session import Base
 
 class SymptomCatalogue(Base):
@@ -22,6 +22,14 @@ class SymptomEntry(Base):
     category = Column(String(50), nullable=False, index=True)
     severity = Column(Integer, default=1, nullable=False) # 0 to 5
     date = Column(String(10), nullable=False, index=True) # YYYY-MM-DD
+    phase_checkpoint = Column(String(50), nullable=True) # menstrual_flow, mid_cycle, luteal_phase, spontaneous
+    grooming_modality = Column(String(50), nullable=True) # none, shaving, waxing, threading, laser, cream
+    days_since_grooming = Column(Integer, nullable=True)
+    rvi_score = Column(Float, nullable=True) # Regrowth Velocity Index
+    craving_type = Column(String(50), nullable=True) # carbohydrate, sugar, salty, none
+    voice_logged = Column(Boolean, default=False, nullable=False)
+    vernacular_raw_text = Column(Text, nullable=True)
     notes = Column(Text, nullable=True)
     
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+

@@ -10,6 +10,7 @@ class UserRole(str, enum.Enum):
     CLINICIAN = "clinician"
     ADMIN = "admin"
     RESEARCHER = "researcher"
+    ASHA_WORKER = "asha_worker"
 
 class User(Base):
     __tablename__ = "users"
@@ -54,9 +55,18 @@ class UserProfile(Base):
     has_prior_pcos_diagnosis = Column(Boolean, default=False, nullable=False)
     has_other_endocrine_condition = Column(Boolean, default=False, nullable=False)
     using_hormonal_contraception = Column(Boolean, default=False, nullable=False)
+    contraceptive_type = Column(String(50), nullable=True) # combined_oral_pill, progestin_only_pill, hormonal_iud, copper_iud, depo_injection, emergency_pill, none
+    contraceptive_name = Column(String(100), nullable=True)
+    contraceptive_start_date = Column(String(10), nullable=True) # YYYY-MM-DD
+    contraceptive_discontinued_date = Column(String(10), nullable=True) # YYYY-MM-DD
     is_pregnant_postpartum = Column(Boolean, default=False, nullable=False)
     is_breastfeeding = Column(Boolean, default=False, nullable=False)
     medications_influencing_cycle = Column(String(255), nullable=True)
+    
+    # UI & Behavioral Preferences
+    body_neutral_mode = Column(Boolean, default=False, nullable=False)
+    postprandial_fatigue_freq = Column(String(50), nullable=True) # rarely, sometimes, often, always
+    preferred_dialect = Column(String(50), default="en", nullable=False) # en, hi, ta
 
     onboarding_completed = Column(Boolean, default=False, nullable=False)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
@@ -89,3 +99,4 @@ class AuditEvent(Base):
     details_json = Column(Text, nullable=True)
     ip_address = Column(String(50), nullable=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+

@@ -9,7 +9,8 @@ from app.schemas.menstrual import (
     MenstrualPeriodCreate,
     MenstrualPeriodUpdate,
     MenstrualPeriodResponse,
-    CycleAnalyticsResponse
+    CycleAnalyticsResponse,
+    PhaseCheckpointResponse
 )
 from app.services.cycle_analytics import CycleAnalyticsService
 
@@ -61,6 +62,23 @@ def create_period(
     db.commit()
     db.refresh(period)
     return period
+
+@router.get("/current-checkpoint", response_model=PhaseCheckpointResponse)
+def get_current_phase_checkpoint(
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    profile = db.query(UserProfile).filter(UserProfile.user_id == current_user.id).first()
+    periods = db.query(MenstrualPeriod).filter(
+        MenstrualPeriod.user_id == current_user.id
+    ).order_by(MenstrualPeriod.start_date.desc()).all()
+
+    last_date = periods[0].start_date if periods else (profile.last_period_date if profile else None)
+    
+    analytics = CycleAnalyticsService.compute_analytics(periods, profile.age if profile else 25, profile.menarche_age if profile else 13)
+    median_len = analytics.get("median_cycle_length") or (profile.typical_cycle_length if profile else 28) or 28
+
+    return CycleAnalyticsService.get_phase_checkpoint(last_date, median_len)
 
 @router.get("/analytics", response_model=CycleAnalyticsResponse)
 def get_cycle_analytics(
@@ -129,3 +147,4 @@ def delete_period(
     db.delete(period)
     db.commit()
     return {"message": "Period entry deleted successfully."}
+

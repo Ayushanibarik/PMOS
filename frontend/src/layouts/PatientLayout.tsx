@@ -15,7 +15,8 @@ import {
   LogOut,
   Plus,
   X,
-  Menu
+  Menu,
+  Users
 } from 'lucide-react'
 import { MedicalDisclaimerBanner } from '../components/common/MedicalDisclaimerBanner'
 import { api } from '../services/api'
@@ -70,6 +71,7 @@ export const PatientLayout: React.FC<PatientLayoutProps> = ({ user, onLogout }) 
     { name: 'Reports & Export', path: '/app/reports', icon: FileText },
     { name: 'Doctor Sharing', path: '/app/sharing', icon: Share2 },
     { name: 'Privacy & Consent', path: '/app/privacy', icon: ShieldCheck },
+    { name: 'ASHA Camp Mode', path: '/app/asha-camp', icon: Users },
   ]
 
   return (
@@ -280,3 +282,4 @@ export const PatientLayout: React.FC<PatientLayoutProps> = ({ user, onLogout }) 
     </div>
   )
 }
+

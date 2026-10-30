@@ -26,3 +26,4 @@ Establish a formal, ethically approved clinical validation pathway before any ma
 ### Phase 4: Regulatory Review (CDSCO)
 - File formal Software as a Medical Device (SaMD) submission under CDSCO Medical Device Rules.
 - Complete clinical safety documentation, user interface hazard analysis, and post-market surveillance plans.
+

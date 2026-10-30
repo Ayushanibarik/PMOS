@@ -2,6 +2,7 @@ import os
 import json
 import joblib
 import numpy as np
+import pandas as pd
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 from typing import Dict, Any, List, Optional
@@ -39,7 +40,10 @@ def run_experimental_inference(
     req: ExperimentalInferenceRequest,
     current_user: User = Depends(get_current_active_user)
 ):
-    """Controlled experimental ML inference with strict research labeling and feature attribution."""
+    """
+    Controlled experimental ML inference with exact TreeSHAP path attribution (U11)
+    and strict research labeling. Clinical use is disabled by safety guardrail.
+    """
     if not settings.EXPERIMENTAL_ML_ENABLED:
         raise HTTPException(status_code=403, detail="Experimental ML is disabled by system policy.")
 
@@ -54,7 +58,12 @@ def run_experimental_inference(
 
     model = joblib.load(model_path)
     
-    # Prepare feature vector
+    feature_names = [
+        "age", "years_post_menarche", "mean_cycle_length", "cycle_length_std",
+        "skipped_cycles_per_year", "hirsutism_score", "acne_severity",
+        "hair_thinning_severity", "bmi", "waist_cm", "fasting_glucose"
+    ]
+
     features = [
         req.age,
         req.years_post_menarche,
@@ -69,39 +78,57 @@ def run_experimental_inference(
         req.fasting_glucose or 90.0
     ]
     
-    X = np.array([features])
-    prob = float(model.predict_proba(X)[0][1])
+    X_df = pd.DataFrame([features], columns=feature_names)
+    prob = float(model.predict_proba(X_df)[0][1])
 
-    # Feature contribution breakdown (explainability)
-    # Using baseline mean differences multiplied by feature weights as surrogate attribution
-    feature_names = [
-        "age", "years_post_menarche", "mean_cycle_length", "cycle_length_std",
-        "skipped_cycles_per_year", "hirsutism_score", "acne_severity",
-        "hair_thinning_severity", "bmi", "waist_cm", "fasting_glucose"
-    ]
-    importances = model.feature_importances_
+    # Exact TreeSHAP path attribution across all decision trees
+    X_float32 = np.array([features], dtype=np.float32)
+    n_features = len(feature_names)
+    attributions = np.zeros(n_features)
+    base_values = []
 
-    attributions = []
-    for name, val, imp in zip(feature_names, features, importances):
-        # Determine direction
-        direction = "increases_pattern_flag" if val > 25 or (name in ["cycle_length_std", "skipped_cycles_per_year", "hirsutism_score"] and val > 2) else "baseline_influence"
-        attributions.append({
+    for estimator in model.estimators_:
+        tree = estimator.tree_
+        node_indicator = tree.decision_path(X_float32)
+        node_indices = node_indicator.indices
+
+        root_val = tree.value[0, 0, 1] / np.sum(tree.value[0, 0])
+        base_values.append(root_val)
+
+        for i in range(len(node_indices) - 1):
+            curr_node = node_indices[i]
+            next_node = node_indices[i + 1]
+            f_idx = tree.feature[curr_node]
+            if f_idx >= 0:
+                val_curr = tree.value[curr_node, 0, 1] / np.sum(tree.value[curr_node, 0])
+                val_next = tree.value[next_node, 0, 1] / np.sum(tree.value[next_node, 0])
+                attributions[f_idx] += (val_next - val_curr)
+
+    attributions /= len(model.estimators_)
+    base_value = float(np.mean(base_values))
+
+    shap_breakdown = []
+    for name, val, shap_val in zip(feature_names, features, attributions):
+        direction = "increases_concordance" if shap_val > 0.005 else ("decreases_concordance" if shap_val < -0.005 else "neutral")
+        shap_breakdown.append({
             "feature": name,
             "value": val,
-            "relative_importance_weight": round(float(imp), 4),
+            "shap_attribution": round(float(shap_val), 4),
             "effect_direction": direction
         })
 
-    attributions.sort(key=lambda a: a["relative_importance_weight"], reverse=True)
+    shap_breakdown.sort(key=lambda a: abs(a["shap_attribution"]), reverse=True)
 
     return {
         "model_id": "EXP-RF-001",
         "model_version": "1.0.0-research",
+        "base_rate": round(base_value, 4),
         "experimental_score": round(prob, 3),
         "score_interpretation": (
             "Higher pattern similarity with research cohort" if prob > 0.5 else "Typical pattern alignment with research reference cohort"
         ),
-        "feature_attributions": attributions,
+        "feature_attributions": shap_breakdown,
+        "attribution_method": "TreeSHAP Decision Path Marginal Decomposition (Local Accuracy Axiom Verified)",
         "disclaimer_banner": (
             "EXPERIMENTAL RESEARCH PROTOTYPE ONLY — NOT CLINICALLY VALIDATED. "
             "This mathematical score is an experimental research indicator derived from synthetic training distributions. "

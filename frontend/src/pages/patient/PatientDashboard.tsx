@@ -24,6 +24,9 @@ import {
 } from 'recharts'
 import { api } from '../../services/api'
 import { CycleAnalytics, SymptomTrendItem, ObservationSummary } from '../../types'
+import { CrisisSupportBanner } from '../../components/common/CrisisSupportBanner'
+import { PatternAlignmentCard } from '../../components/dashboard/PatternAlignmentCard'
+import { PhaseCheckinWidget } from '../../components/dashboard/PhaseCheckinWidget'
 
 export const PatientDashboard: React.FC = () => {
   const [analytics, setAnalytics] = useState<CycleAnalytics | null>(null)
@@ -68,6 +71,9 @@ export const PatientDashboard: React.FC = () => {
 
   return (
     <div className="space-y-6 text-left">
+      {/* Crisis and Mental Health Emergency Support (U13 Clinical Safety) */}
+      <CrisisSupportBanner />
+
       {/* Welcome & Status Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-3xl border border-ivory-300 shadow-subtle">
         <div className="space-y-1">
@@ -154,6 +160,12 @@ export const PatientDashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Phase Check-in Widget (U01: 3-Checkpoint Phase Micro-Logging) */}
+      <PhaseCheckinWidget />
+
+      {/* Pattern Alignment Index (U09: Multi-Axial Risk Representation) */}
+      <PatternAlignmentCard />
 
       {/* Main Grid: Cycle Chart + Prediction / Observations */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -314,3 +326,4 @@ export const PatientDashboard: React.FC = () => {
     </div>
   )
 }
+

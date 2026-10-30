@@ -49,3 +49,4 @@ The clinical rule engine automatically reminds users and clinicians that menstru
 ## 5. Emergency Red-Flag Escalation
 
 If users report severe sudden pelvic pain, fever, or soaking through multiple pads per hour, CycleAware displays an immediate emergency medical alert advising emergency clinical consultation.
+

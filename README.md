@@ -134,3 +134,4 @@ Detailed engineering and clinical governance specifications are located in `/doc
 
 ## 8. License & Medical Ethics Notice
 Licensed under the Apache 2.0 License. All synthetic research data is intended exclusively for software validation and non-clinical demonstrations.
+

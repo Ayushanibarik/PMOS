@@ -18,3 +18,4 @@ Before CycleAware can seek formal classification as Software as a Medical Device
 2. **Multi-Centric Prospective Clinical Trial**: Validation on a diverse clinical cohort of minimum 2,000 real patients across Indian tertiary centers.
 3. **IEC/IRB Ethical Approval**: Institutional Ethics Committee protocol approval for prospective data collection.
 4. **Third-Party Medical Language Review**: Comprehensive localization audit of Hindi and Odia medical educational content by certified medical linguists.
+

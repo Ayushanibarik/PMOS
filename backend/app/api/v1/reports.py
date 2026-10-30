@@ -24,32 +24,74 @@ def build_patient_data_bundle(current_user: User, db: Session):
     menarche_age = profile.menarche_age if profile else 13
     analytics = CycleAnalyticsService.compute_analytics(periods, user_age, menarche_age)
 
-    # Observations
+    # Observations & PAI
     summaries = analytics.get("cycle_history", [])
+    symptoms_payload = [
+        {"symptom_code": s.symptom_code, "symptom_name": s.symptom_name, "category": s.category, "severity": s.severity, "date": s.date, "rvi_score": s.rvi_score}
+        for s in symptoms
+    ]
+    measurements_payload = [
+        {
+            "weight_kg": m.weight_kg,
+            "height_cm": m.height_cm,
+            "bmi": m.bmi,
+            "waist_cm": m.waist_cm,
+            "waist_to_height_ratio": m.waist_to_height_ratio,
+            "neck_circumference_cm": m.neck_circumference_cm,
+            "date": m.date
+        }
+        for m in measurements
+    ]
+    labs_payload = [
+        {"test_name": l.test_name, "value": l.value, "unit": l.unit, "test_date": l.test_date}
+        for l in labs
+    ]
+
     obs_list = ClinicalRuleEngine.evaluate(
         user_profile=profile,
         cycles=summaries,
-        symptoms=[{"symptom_code": s.symptom_code, "symptom_name": s.symptom_name, "category": s.category, "severity": s.severity, "date": s.date} for s in symptoms],
-        measurements=[{"weight_kg": m.weight_kg, "height_cm": m.height_cm, "bmi": m.bmi, "waist_cm": m.waist_cm, "date": m.date} for m in measurements],
-        lab_results=[{"test_name": l.test_name, "value": l.value, "unit": l.unit, "test_date": l.test_date} for l in labs]
+        symptoms=symptoms_payload,
+        measurements=measurements_payload,
+        lab_results=labs_payload
+    )
+
+    pai_data = ClinicalRuleEngine.calculate_pattern_alignment_index(
+        user_profile=profile,
+        cycles=summaries,
+        symptoms=symptoms_payload,
+        measurements=measurements_payload,
+        lab_results=labs_payload
     )
 
     return {
         "profile": {
             "age": profile.age if profile else None,
             "menarche_age": profile.menarche_age if profile else None,
-            "country": profile.country if profile else "India"
+            "country": profile.country if profile else "India",
+            "using_hormonal_contraception": profile.using_hormonal_contraception if profile else False
         },
         "periods": [
             {"start_date": p.start_date, "end_date": p.end_date, "flow_intensity": p.flow_intensity, "has_spotting": p.has_spotting, "associated_symptoms": p.associated_symptoms, "notes": p.notes}
             for p in periods
         ],
         "symptoms": [
-            {"date": s.date, "category": s.category, "symptom_name": s.symptom_name, "severity": s.severity, "notes": s.notes}
+            {"date": s.date, "category": s.category, "symptom_name": s.symptom_name, "severity": s.severity, "phase_checkpoint": s.phase_checkpoint, "grooming_modality": s.grooming_modality, "rvi_score": s.rvi_score, "notes": s.notes}
             for s in symptoms
         ],
         "measurements": [
-            {"date": m.date, "weight_kg": m.weight_kg, "height_cm": m.height_cm, "bmi": m.bmi, "waist_cm": m.waist_cm, "resting_heart_rate": m.resting_heart_rate, "systolic_bp": m.systolic_bp, "diastolic_bp": m.diastolic_bp, "sleep_hours": m.sleep_hours}
+            {
+                "date": m.date,
+                "weight_kg": m.weight_kg,
+                "height_cm": m.height_cm,
+                "bmi": m.bmi,
+                "waist_cm": m.waist_cm,
+                "waist_to_height_ratio": m.waist_to_height_ratio,
+                "neck_circumference_cm": m.neck_circumference_cm,
+                "resting_heart_rate": m.resting_heart_rate,
+                "systolic_bp": m.systolic_bp,
+                "diastolic_bp": m.diastolic_bp,
+                "sleep_hours": m.sleep_hours
+            }
             for m in measurements
         ],
         "lab_results": [
@@ -57,6 +99,7 @@ def build_patient_data_bundle(current_user: User, db: Session):
             for l in labs
         ],
         "analytics": analytics,
+        "pai": pai_data,
         "observations": [o.to_dict() for o in obs_list]
     }
 
@@ -105,3 +148,4 @@ def download_pdf_report(
         media_type="application/pdf",
         headers={"Content-Disposition": f"attachment; filename=CycleAware_Report_{current_user.id[:8]}.pdf"}
     )
+

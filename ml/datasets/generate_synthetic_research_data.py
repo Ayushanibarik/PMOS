@@ -127,3 +127,4 @@ def generate_dataset(n_samples: int = 500, random_seed: int = 42):
 
 if __name__ == "__main__":
     generate_dataset()
+

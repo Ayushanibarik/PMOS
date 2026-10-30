@@ -30,6 +30,8 @@ class CycleSummary(Base):
     cycle_length_days = Column(Integer, nullable=False)
     bleeding_duration_days = Column(Integer, nullable=True)
     is_irregular_by_guideline = Column(Boolean, default=False, nullable=False)
+    beta_drift_slope = Column(Float, nullable=True) # Longitudinal shift in days/cycle
+    drift_confidence = Column(String(20), default="insufficient_data", nullable=True)
     
     calculated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
 
@@ -47,3 +49,4 @@ class CyclePrediction(Base):
     method_used = Column(String(50), default="rolling_median_variance", nullable=False)
     
     generated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+

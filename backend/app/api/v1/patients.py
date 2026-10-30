@@ -210,3 +210,4 @@ def get_unified_timeline(
     # Sort descending by date
     timeline.sort(key=lambda item: item["date"], reverse=True)
     return timeline
+

@@ -253,3 +253,4 @@ export const PrivacySettingsPage: React.FC = () => {
     </div>
   )
 }
+

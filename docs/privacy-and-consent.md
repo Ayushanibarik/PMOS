@@ -30,3 +30,4 @@ CycleAware is engineered from first principles to align with:
 ### Children and Adolescent Protections (Section 9)
 - Users under 18 receive age-appropriate pubertal guidance.
 - Adult diagnostic thresholds and automated risk estimations are strictly blocked for minor users.
+

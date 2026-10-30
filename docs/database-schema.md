@@ -109,3 +109,4 @@
   - `consultation_date` (VARCHAR(10))
   - `general_notes`, `cycle_review`, `symptom_review`, `recommendation` (TEXT)
   - `referral_status` (VARCHAR(50))
+

@@ -23,6 +23,7 @@ import { PatternObservationsPage } from './pages/patient/PatternObservationsPage
 import { ReportsPage } from './pages/patient/ReportsPage'
 import { DoctorSharingPage } from './pages/patient/DoctorSharingPage'
 import { PrivacySettingsPage } from './pages/patient/PrivacySettingsPage'
+import { AshaCampModePage } from './pages/asha/AshaCampModePage'
 import { ClinicianDashboard } from './pages/clinician/ClinicianDashboard'
 import { AdminDashboard } from './pages/admin/AdminDashboard'
 import { api } from './services/api'
@@ -85,6 +86,7 @@ export const App: React.FC = () => {
         <Route path="reports" element={<ReportsPage />} />
         <Route path="sharing" element={<DoctorSharingPage />} />
         <Route path="privacy" element={<PrivacySettingsPage />} />
+        <Route path="asha-camp" element={<AshaCampModePage />} />
       </Route>
 
       {/* Clinician Portal Shell */}
@@ -98,3 +100,4 @@ export const App: React.FC = () => {
     </Routes>
   )
 }
+

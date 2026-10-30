@@ -37,3 +37,4 @@ Every machine learning model evaluated within the CycleAware research environmen
 
 ### 6. Clinical Safety Guardrail
 - `is_enabled_for_clinical_use`: Boolean flag, hardcoded to `false` for all unvalidated research prototypes.
+

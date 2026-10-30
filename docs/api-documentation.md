@@ -98,3 +98,4 @@ All authenticated requests require the `Authorization: Bearer <access_token>` he
 | `GET` | `/ml/models` | Retrieve Model Registry cards & metrics | Yes |
 | `POST` | `/ml/experimental-inference` | Research inference playground with SHAP vectors | Yes |
 | `GET` | `/admin/system-health` | Operational health status & user counts | Yes (Admin) |
+

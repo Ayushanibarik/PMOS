@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from typing import Optional, List
 from datetime import datetime
 
@@ -8,6 +8,8 @@ class ClinicianInviteRequest(BaseModel):
     duration_days: int = 30
 
 class SharingPermissionResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: str
     patient_id: str
     clinician_id: Optional[str] = None
@@ -16,9 +18,6 @@ class SharingPermissionResponse(BaseModel):
     valid_until: str
     is_revoked: bool
     created_at: datetime
-
-    class Config:
-        from_attributes = True
 
 class ClinicianNoteCreate(BaseModel):
     patient_id: str
@@ -31,6 +30,8 @@ class ClinicianNoteCreate(BaseModel):
     referral_status: Optional[str] = "none"
 
 class ClinicianNoteResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: str
     patient_id: str
     clinician_id: str
@@ -42,9 +43,6 @@ class ClinicianNoteResponse(BaseModel):
     follow_up_date: Optional[str] = None
     referral_status: Optional[str] = None
     created_at: datetime
-
-    class Config:
-        from_attributes = True
 
 class AuthorizedPatientSummary(BaseModel):
     patient_id: str

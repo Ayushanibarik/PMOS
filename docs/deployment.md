@@ -55,3 +55,4 @@ npm run test --prefix frontend
 # Frontend build verification
 npm run build --prefix frontend
 ```
+

@@ -110,3 +110,4 @@ def root():
         "docs_url": "/docs",
         "version": settings.APP_VERSION
     }
+

@@ -59,6 +59,7 @@ export const api = {
   updatePeriod: (id: string, data: any) => request<any>(`/cycles/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
   deletePeriod: (id: string) => request<any>(`/cycles/${id}`, { method: 'DELETE' }),
   getCycleAnalytics: () => request<any>('/cycles/analytics'),
+  getCurrentCheckpoint: () => request<any>('/cycles/current-checkpoint'),
 
   // Symptoms
   getSymptomCatalogue: () => request<any[]>('/symptoms/catalogue'),
@@ -66,17 +67,28 @@ export const api = {
   createSymptom: (data: any) => request<any>('/symptoms', { method: 'POST', body: JSON.stringify(data) }),
   getSymptomTrends: () => request<any[]>('/symptoms/trends'),
   deleteSymptom: (id: string) => request<any>(`/symptoms/${id}`, { method: 'DELETE' }),
+  parseVernacularSpeech: (text: string, language = 'hi') => request<any>('/symptoms/vernacular-nlp', { method: 'POST', body: JSON.stringify({ text, language }) }),
+  calculateRvi: (data: any) => request<any>('/symptoms/calculate-rvi', { method: 'POST', body: JSON.stringify(data) }),
 
   // Measurements
   getMeasurements: () => request<any[]>('/measurements'),
   createMeasurement: (data: any) => request<any>('/measurements', { method: 'POST', body: JSON.stringify(data) }),
   deleteMeasurement: (id: string) => request<any>(`/measurements/${id}`, { method: 'DELETE' }),
+  submitRppgBiomarker: (data: any) => request<any>('/measurements/rppg-biomarker', { method: 'POST', body: JSON.stringify(data) }),
 
-  // Clinical Records
+  // Clinical Records & Schedule
   getLabs: () => request<any[]>('/clinical-records/labs'),
   createLab: (data: any) => request<any>('/clinical-records/labs', { method: 'POST', body: JSON.stringify(data) }),
   deleteLab: (id: string) => request<any>(`/clinical-records/labs/${id}`, { method: 'DELETE' }),
   getDocuments: () => request<any[]>('/clinical-records/documents'),
+  getRecommendedLabSchedule: () => request<any[]>('/clinical-records/recommended-schedule'),
+  recordConsultationOutcome: (data: any) => request<any>('/clinical-records/consultation-outcome', { method: 'POST', body: JSON.stringify(data) }),
+  rollbackRecalibration: (outcomeId: string) => request<any>(`/clinical-records/recalibration-rollback/${outcomeId}`, { method: 'POST' }),
+  
+  // ASHA Camp Mode
+  createAshaCampIntake: (data: any) => request<any>('/clinical-records/asha/camp-intake', { method: 'POST', body: JSON.stringify(data) }),
+  listAshaCampRecords: () => request<any[]>('/clinical-records/asha/camp-records'),
+
   uploadDocument: async (file: File, documentType = 'lab_report') => {
     const formData = new FormData()
     formData.append('file', file)

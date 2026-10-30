@@ -1,5 +1,5 @@
-from pydantic import BaseModel, Field
-from typing import Optional, List
+from pydantic import BaseModel, Field, ConfigDict
+from typing import Optional, List, Dict, Any
 from datetime import datetime
 
 class MenstrualPeriodCreate(BaseModel):
@@ -19,6 +19,8 @@ class MenstrualPeriodUpdate(BaseModel):
     notes: Optional[str] = None
 
 class MenstrualPeriodResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: str
     user_id: str
     start_date: str
@@ -30,20 +32,18 @@ class MenstrualPeriodResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
-
 class CycleSummaryResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: str
     cycle_start_date: str
     cycle_end_date: str
     cycle_length_days: int
     bleeding_duration_days: Optional[int] = None
     is_irregular_by_guideline: bool
+    beta_drift_slope: Optional[float] = None
+    drift_confidence: Optional[str] = None
     calculated_at: datetime
-
-    class Config:
-        from_attributes = True
 
 class CyclePredictionResponse(BaseModel):
     predicted_start_date: Optional[str] = None
@@ -53,6 +53,17 @@ class CyclePredictionResponse(BaseModel):
     cycle_count_used: int
     method_used: str
     explanation: str
+
+class PhaseCheckpointResponse(BaseModel):
+    current_cycle_day: Optional[int] = None
+    estimated_phase: str # menstrual_flow, mid_cycle, luteal_phase, follicular_interim, uncertain
+    checkpoint_active: bool
+    checkpoint_type: Optional[str] = None # menstrual_flow, mid_cycle, luteal_phase
+    checkpoint_title: Optional[str] = None
+    checkpoint_prompt: Optional[str] = None
+    suggested_symptom_codes: List[str] = []
+    can_skip: bool = True
+    disclaimer: str
 
 class CycleAnalyticsResponse(BaseModel):
     total_recorded_cycles: int
@@ -65,5 +76,6 @@ class CycleAnalyticsResponse(BaseModel):
     irregular_cycles_count: int
     has_sufficient_data: bool
     guideline_status: str
-    cycle_history: List[CycleSummaryResponse]
-    prediction: Optional[CyclePredictionResponse] = None
+    beta_drift: Optional[Dict[str, Any]] = None
+    cycle_history: List[Dict[str, Any]]
+    prediction: CyclePredictionResponse

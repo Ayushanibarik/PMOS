@@ -1,18 +1,23 @@
 import React, { useEffect, useState } from 'react'
-import { Scale, Plus, Trash2, Heart, Moon, Activity } from 'lucide-react'
+import { Scale, Plus, Trash2, Heart, Moon, Activity, Camera, EyeOff, Eye } from 'lucide-react'
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts'
 import { api } from '../../services/api'
 import { BodyMeasurement } from '../../types'
+import { SouthAsianMetabolicCard } from '../../components/measurements/SouthAsianMetabolicCard'
+import { RppgScannerModal } from '../../components/biometrics/RppgScannerModal'
 
 export const HealthMeasurementsPage: React.FC = () => {
   const [measurements, setMeasurements] = useState<BodyMeasurement[]>([])
   const [loading, setLoading] = useState(true)
+  const [scannerOpen, setScannerOpen] = useState(false)
+  const [bodyNeutralMode, setBodyNeutralMode] = useState(false)
 
   // Form State
   const [date, setDate] = useState(new Date().toISOString().split('T')[0])
   const [weight, setWeight] = useState<number | ''>(68.5)
   const [height, setHeight] = useState<number | ''>(162.0)
   const [waist, setWaist] = useState<number | ''>(84.0)
+  const [neckCircumference, setNeckCircumference] = useState<number | ''>(33.5)
   const [restingHr, setRestingHr] = useState<number | ''>(72)
   const [sysBp, setSysBp] = useState<number | ''>(118)
   const [diaBp, setDiaBp] = useState<number | ''>(76)
@@ -43,6 +48,7 @@ export const HealthMeasurementsPage: React.FC = () => {
         weight_kg: Number(weight) || undefined,
         height_cm: Number(height) || undefined,
         waist_cm: Number(waist) || undefined,
+        neck_circumference_cm: Number(neckCircumference) || undefined,
         resting_heart_rate: Number(restingHr) || undefined,
         systolic_bp: Number(sysBp) || undefined,
         diastolic_bp: Number(diaBp) || undefined,
@@ -80,14 +86,46 @@ export const HealthMeasurementsPage: React.FC = () => {
   return (
     <div className="space-y-8 text-left">
       {/* Header */}
-      <div className="bg-white p-6 rounded-3xl border border-ivory-300 shadow-subtle space-y-1">
-        <h1 className="font-serif text-2xl font-bold text-plum-900">
-          Physiological & Metabolic Measurements
-        </h1>
-        <p className="text-xs text-slate-500">
-          Monitor weight dynamics, waist circumference, blood pressure, and sleep in relation to your cycles.
-        </p>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-3xl border border-ivory-300 shadow-subtle">
+        <div className="space-y-1">
+          <h1 className="font-serif text-2xl font-bold text-plum-900">
+            Physiological & Metabolic Measurements
+          </h1>
+          <p className="text-xs text-slate-500">
+            Monitor weight dynamics, waist circumference, blood pressure, and sleep in relation to your cycles.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          {/* Body-Neutral Mode Toggle */}
+          <button
+            type="button"
+            onClick={() => setBodyNeutralMode(!bodyNeutralMode)}
+            className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border transition-colors ${
+              bodyNeutralMode
+                ? 'bg-plum-50 border-plum-300 text-plum-800'
+                : 'bg-white border-ivory-300 text-slate-600 hover:bg-ivory-100'
+            }`}
+            title="Body-Neutral Mode suppresses triggering weight numbers and highlights metabolic health"
+          >
+            {bodyNeutralMode ? <EyeOff className="w-3.5 h-3.5 text-plum-700" /> : <Eye className="w-3.5 h-3.5 text-slate-500" />}
+            <span>{bodyNeutralMode ? 'Body-Neutral Active' : 'Body-Neutral Mode'}</span>
+          </button>
+
+          {/* Camera Biometrics (Edge rPPG) */}
+          <button
+            type="button"
+            onClick={() => setScannerOpen(true)}
+            className="flex items-center gap-1.5 px-3.5 py-2 bg-plum-800 hover:bg-plum-700 text-white rounded-xl text-xs font-semibold shadow-subtle transition-colors"
+          >
+            <Camera className="w-3.5 h-3.5 text-rose-300" />
+            <span>Camera Biometrics (rPPG)</span>
+          </button>
+        </div>
       </div>
+
+      {/* U04: South Asian Thin-Fat Metabolic Phenotype Card */}
+      <SouthAsianMetabolicCard latestMeasurement={latest} />
 
       {/* Latest Metrics Summary Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -96,10 +134,16 @@ export const HealthMeasurementsPage: React.FC = () => {
             Latest Weight
           </div>
           <div className="text-2xl font-bold text-plum-900">
-            {latest?.weight_kg ? `${latest.weight_kg} kg` : '—'}
+            {bodyNeutralMode ? (
+              <span className="text-sm font-medium text-slate-400">Tracked (Hidden)</span>
+            ) : latest?.weight_kg ? (
+              `${latest.weight_kg} kg`
+            ) : (
+              '—'
+            )}
           </div>
           <div className="text-[10px] text-slate-500">
-            BMI: {latest?.bmi ? `${latest.bmi} kg/m²` : '—'}
+            {bodyNeutralMode ? 'Body-neutral mode active' : latest?.bmi ? `BMI: ${latest.bmi} kg/m²` : '—'}
           </div>
         </div>
 
@@ -191,18 +235,34 @@ export const HealthMeasurementsPage: React.FC = () => {
               </div>
             </div>
 
-            <div>
-              <label className="block font-semibold text-slate-700 mb-1">
-                Waist Circumference (cm)
-              </label>
-              <input
-                type="number"
-                step="0.5"
-                value={waist}
-                onChange={(e) => setWaist(e.target.value ? Number(e.target.value) : '')}
-                placeholder="Around narrowest part of waist"
-                className="w-full px-3 py-2 border border-ivory-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-plum-700"
-              />
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1">
+                  Waist (cm)
+                </label>
+                <input
+                  type="number"
+                  step="0.5"
+                  value={waist}
+                  onChange={(e) => setWaist(e.target.value ? Number(e.target.value) : '')}
+                  placeholder="Narrowest waist"
+                  className="w-full px-3 py-2 border border-ivory-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-plum-700"
+                />
+              </div>
+
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1">
+                  Neck Circ. (cm)
+                </label>
+                <input
+                  type="number"
+                  step="0.5"
+                  value={neckCircumference}
+                  onChange={(e) => setNeckCircumference(e.target.value ? Number(e.target.value) : '')}
+                  placeholder="Mid-neck (adiposity proxy)"
+                  className="w-full px-3 py-2 border border-ivory-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-plum-700"
+                />
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
@@ -354,6 +414,17 @@ export const HealthMeasurementsPage: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* U05: Edge rPPG Scanner Modal */}
+      <RppgScannerModal
+        isOpen={scannerOpen}
+        onClose={() => setScannerOpen(false)}
+        onSuccess={() => {
+          loadData()
+          setScannerOpen(false)
+        }}
+      />
     </div>
   )
 }
+

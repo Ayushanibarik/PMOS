@@ -1,13 +1,19 @@
 import React, { useEffect, useState } from 'react'
-import { Activity, Plus, Trash2, TrendingUp, TrendingDown, Minus, Sparkles } from 'lucide-react'
+import { Activity, Plus, Trash2, TrendingUp, TrendingDown, Minus, Sparkles, Mic, Scissors } from 'lucide-react'
 import { api } from '../../services/api'
 import { SymptomEntry, SymptomCatalogueItem, SymptomTrendItem } from '../../types'
+import { VernacularVoiceModal } from '../../components/symptoms/VernacularVoiceModal'
+import { RviGroomingModal } from '../../components/symptoms/RviGroomingModal'
 
 export const SymptomJournalPage: React.FC = () => {
   const [entries, setEntries] = useState<SymptomEntry[]>([])
   const [catalogue, setCatalogue] = useState<SymptomCatalogueItem[]>([])
   const [trends, setTrends] = useState<SymptomTrendItem[]>([])
   const [loading, setLoading] = useState(true)
+
+  // Advanced Modals
+  const [vernacularModalOpen, setVernacularModalOpen] = useState(false)
+  const [rviModalOpen, setRviModalOpen] = useState(false)
 
   // Form State
   const [selectedCategory, setSelectedCategory] = useState('skin')
@@ -94,13 +100,37 @@ export const SymptomJournalPage: React.FC = () => {
   return (
     <div className="space-y-8 text-left">
       {/* Top Banner */}
-      <div className="bg-white p-6 rounded-3xl border border-ivory-300 shadow-subtle space-y-1">
-        <h1 className="font-serif text-2xl font-bold text-plum-900">
-          Symptom Journal & Association Tracking
-        </h1>
-        <p className="text-xs text-slate-500">
-          Track recurring skin, hair, metabolic, and wellbeing signs to observe associations across your cycle.
-        </p>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-3xl border border-ivory-300 shadow-subtle">
+        <div className="space-y-1">
+          <h1 className="font-serif text-2xl font-bold text-plum-900">
+            Symptom Journal & Association Tracking
+          </h1>
+          <p className="text-xs text-slate-500">
+            Track recurring skin, hair, metabolic, and wellbeing signs to observe associations across your cycle.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          {/* U03: Vernacular Voice NLP */}
+          <button
+            type="button"
+            onClick={() => setVernacularModalOpen(true)}
+            className="flex items-center gap-1.5 px-3 py-2 bg-ivory-100 hover:bg-ivory-200 border border-ivory-300 text-slate-700 rounded-xl text-xs font-semibold transition-colors"
+          >
+            <Mic className="w-3.5 h-3.5 text-rose-500" />
+            <span>Voice / Vernacular (Hindi/Tamil)</span>
+          </button>
+
+          {/* U06: RVI Grooming Compensation */}
+          <button
+            type="button"
+            onClick={() => setRviModalOpen(true)}
+            className="flex items-center gap-1.5 px-3 py-2 bg-plum-800 hover:bg-plum-700 text-white rounded-xl text-xs font-semibold shadow-subtle transition-colors"
+          >
+            <Scissors className="w-3.5 h-3.5 text-rose-300" />
+            <span>RVI Grooming Calculator</span>
+          </button>
+        </div>
       </div>
 
       {/* Log Form + Trends Grid */}
@@ -309,6 +339,20 @@ export const SymptomJournalPage: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* U03: Vernacular Voice Modal */}
+      <VernacularVoiceModal
+        isOpen={vernacularModalOpen}
+        onClose={() => setVernacularModalOpen(false)}
+        onSuccess={() => loadData()}
+      />
+
+      {/* U06: RVI Grooming Modal */}
+      <RviGroomingModal
+        isOpen={rviModalOpen}
+        onClose={() => setRviModalOpen(false)}
+        onSuccess={() => loadData()}
+      />
     </div>
   )
 }

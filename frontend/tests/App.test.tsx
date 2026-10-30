@@ -22,3 +22,4 @@ describe('CycleAware Frontend Smoke & Calculation Tests', () => {
     expect(isAdolescentIrregular(48)).toBe(true)
   })
 })
+

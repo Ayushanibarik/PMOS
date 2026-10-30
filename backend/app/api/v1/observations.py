@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.db.session import get_db
@@ -7,7 +8,12 @@ from app.models.menstrual import MenstrualPeriod
 from app.models.symptom import SymptomEntry
 from app.models.measurement import BodyMeasurement
 from app.models.clinical import LaboratoryResult
-from app.schemas.observation import ObservationSummaryResponse, PatternObservationResponse
+from app.schemas.observation import (
+    ObservationSummaryResponse,
+    PatternObservationResponse,
+    PatternAlignmentIndexResponse,
+    PatternAlignmentAxisBreakdown
+)
 from app.clinical_rules.engine import ClinicalRuleEngine
 from app.services.cycle_analytics import CycleAnalyticsService
 
@@ -24,7 +30,6 @@ def get_clinical_observations(
     measurements = db.query(BodyMeasurement).filter(BodyMeasurement.user_id == current_user.id).all()
     labs = db.query(LaboratoryResult).filter(LaboratoryResult.user_id == current_user.id).all()
 
-    # Calculate summaries
     user_age = profile.age if profile else 25
     menarche_age = profile.menarche_age if profile else 13
     summaries = CycleAnalyticsService.calculate_cycle_summaries(periods, user_age, menarche_age)
@@ -32,11 +37,27 @@ def get_clinical_observations(
     # Format inputs for rule engine
     cycles_data = summaries
     symptoms_data = [
-        {"symptom_code": s.symptom_code, "symptom_name": s.symptom_name, "category": s.category, "severity": s.severity, "date": s.date}
+        {
+            "symptom_code": s.symptom_code,
+            "symptom_name": s.symptom_name,
+            "category": s.category,
+            "severity": s.severity,
+            "date": s.date,
+            "rvi_score": s.rvi_score
+        }
         for s in symptoms
     ]
     measurements_data = [
-        {"weight_kg": m.weight_kg, "height_cm": m.height_cm, "bmi": m.bmi, "waist_cm": m.waist_cm, "date": m.date}
+        {
+            "weight_kg": m.weight_kg,
+            "height_cm": m.height_cm,
+            "bmi": m.bmi,
+            "waist_cm": m.waist_cm,
+            "waist_to_height_ratio": m.waist_to_height_ratio,
+            "neck_circumference_cm": m.neck_circumference_cm,
+            "postprandial_slump_score": m.postprandial_slump_score,
+            "date": m.date
+        }
         for m in measurements
     ]
     labs_data = [
@@ -52,10 +73,30 @@ def get_clinical_observations(
         lab_results=labs_data
     )
 
+    pai_data = ClinicalRuleEngine.calculate_pattern_alignment_index(
+        user_profile=profile,
+        cycles=cycles_data,
+        symptoms=symptoms_data,
+        measurements=measurements_data,
+        lab_results=labs_data
+    )
+
+    pai_response = PatternAlignmentIndexResponse(
+        pai_score=pai_data["pai_score"],
+        alignment_level=pai_data["alignment_level"],
+        axes=[PatternAlignmentAxisBreakdown(**ax) for ax in pai_data["axes"]],
+        confidence_level=pai_data["confidence_level"],
+        data_completeness_pct=pai_data["data_completeness_pct"],
+        developmental_modifier=pai_data.get("developmental_modifier"),
+        contraceptive_modifier=pai_data.get("contraceptive_modifier"),
+        disclaimer=pai_data["disclaimer"]
+    )
+
     has_irregular = any(obs.category == "cycle_regularity" and obs.observation_type == "follow_up_observation" for obs in obs_list)
     has_hyper = any(obs.category == "hyperandrogenism_signs" for obs in obs_list)
     has_metabolic = any(obs.category == "metabolic_markers" for obs in obs_list)
 
+    now_utc = datetime.now(timezone.utc)
     formatted_obs = [
         PatternObservationResponse(
             id=f"obs_{idx}",
@@ -67,7 +108,7 @@ def get_clinical_observations(
             evidence_details=o.evidence_details,
             recommendation=o.recommendation,
             rule_version=ClinicalRuleEngine.GUIDELINE_VERSION,
-            created_at=profile.created_at if profile else None
+            created_at=profile.created_at if (profile and profile.created_at) else now_utc
         )
         for idx, o in enumerate(obs_list)
     ]
@@ -77,6 +118,7 @@ def get_clinical_observations(
         has_irregular_cycles=has_irregular,
         has_hyperandrogenism_signs=has_hyper,
         has_metabolic_markers=has_metabolic,
+        pattern_alignment_index=pai_response,
         guideline_citation=ClinicalRuleEngine.GUIDELINE_CITATION,
         disclaimer=(
             "Pattern observations highlight statistical and clinical guideline correlations. "

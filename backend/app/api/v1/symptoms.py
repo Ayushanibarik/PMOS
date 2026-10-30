@@ -5,7 +5,18 @@ from app.db.session import get_db
 from app.api.deps import get_current_active_user
 from app.models.user import User
 from app.models.symptom import SymptomEntry, SymptomCatalogue
-from app.schemas.symptom import SymptomCreate, SymptomResponse, SymptomCatalogueItem, SymptomTrendItem
+from app.schemas.symptom import (
+    SymptomCreate,
+    SymptomResponse,
+    SymptomCatalogueItem,
+    SymptomTrendItem,
+    VernacularNlpRequest,
+    VernacularNlpResponse,
+    RviCalculationRequest,
+    RviCalculationResponse
+)
+from app.services.vernacular_nlp import VernacularNlpService
+from app.services.rvi_calculator import RviCalculatorService
 
 router = APIRouter(prefix="/symptoms", tags=["Symptoms"])
 
@@ -43,7 +54,6 @@ DEFAULT_CATALOGUE = [
 def get_catalogue(db: Session = Depends(get_db)):
     items = db.query(SymptomCatalogue).all()
     if not items:
-        # Seed default catalogue
         for item in DEFAULT_CATALOGUE:
             db.add(SymptomCatalogue(
                 code=item["code"],
@@ -85,12 +95,46 @@ def create_symptom(
         category=symptom_in.category,
         severity=symptom_in.severity,
         date=symptom_in.date,
+        phase_checkpoint=symptom_in.phase_checkpoint,
+        grooming_modality=symptom_in.grooming_modality,
+        days_since_grooming=symptom_in.days_since_grooming,
+        rvi_score=symptom_in.rvi_score,
+        craving_type=symptom_in.craving_type,
+        voice_logged=symptom_in.voice_logged,
+        vernacular_raw_text=symptom_in.vernacular_raw_text,
         notes=symptom_in.notes
     )
     db.add(entry)
     db.commit()
     db.refresh(entry)
     return entry
+
+@router.post("/vernacular-nlp", response_model=VernacularNlpResponse)
+def parse_vernacular_speech_text(
+    nlp_in: VernacularNlpRequest,
+    current_user: User = Depends(get_current_active_user)
+):
+    """
+    Extracts clinical symptom concepts from Hindi, Tamil, or Hinglish voice/text input.
+    Detects negation and assigns preliminary severity with mandatory user confirmation.
+    """
+    return VernacularNlpService.extract_concepts(nlp_in.text, nlp_in.language)
+
+@router.post("/calculate-rvi", response_model=RviCalculationResponse)
+def calculate_regrowth_velocity(
+    req: RviCalculationRequest,
+    current_user: User = Depends(get_current_active_user)
+):
+    """
+    Calculates Regrowth Velocity Index (RVI) compensating for cosmetic hair removal (waxing/threading/shaving)
+    and classifies Individual Typology Angle (ITA°) for camera contrast normalization.
+    """
+    return RviCalculatorService.compute_rvi(
+        observed_severity=req.observed_severity,
+        grooming_modality=req.grooming_modality,
+        days_since_grooming=req.days_since_grooming,
+        ita_angle=req.ita_angle
+    )
 
 @router.get("/trends", response_model=List[SymptomTrendItem])
 def get_symptom_trends(

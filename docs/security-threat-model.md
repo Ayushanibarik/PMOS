@@ -18,3 +18,4 @@
 - **Cross-Site Scripting (XSS)**: Automatic React JSX output encoding and sanitized HTML.
 - **Insecure Direct Object References (IDOR)**: Every query filtering on `period_id`, `symptom_id`, `document_id` strictly requires `user_id == current_user.id`.
 - **Malicious Upload Execution**: Files stored in private directory outside webroot with generated UUID filenames; executable MIME types blocked.
+

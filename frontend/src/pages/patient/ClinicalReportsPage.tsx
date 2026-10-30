@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import { FileSpreadsheet, Upload, Trash2, Download, AlertTriangle, CheckCircle2, FileText } from 'lucide-react'
+import { FileSpreadsheet, Upload, Trash2, Download, AlertTriangle, CheckCircle2, FileText, UserCheck } from 'lucide-react'
 import { api } from '../../services/api'
 import { LaboratoryResult, UploadedDocument } from '../../types'
+import { LabScheduleWidget } from '../../components/clinical/LabScheduleWidget'
+import { ConsultationRecalibrationModal } from '../../components/clinical/ConsultationRecalibrationModal'
 
 const COMMON_TESTS = [
   { name: 'Total Testosterone', defaultUnit: 'ng/dL', sampleRef: '15 - 70 ng/dL' },
@@ -22,6 +24,7 @@ export const ClinicalReportsPage: React.FC = () => {
   const [labs, setLabs] = useState<LaboratoryResult[]>([])
   const [documents, setDocuments] = useState<UploadedDocument[]>([])
   const [loading, setLoading] = useState(true)
+  const [recalibrationOpen, setRecalibrationOpen] = useState(false)
 
   // Form State
   const [testName, setTestName] = useState('Total Testosterone')
@@ -114,14 +117,28 @@ export const ClinicalReportsPage: React.FC = () => {
   return (
     <div className="space-y-8 text-left">
       {/* Banner */}
-      <div className="bg-white p-6 rounded-3xl border border-ivory-300 shadow-subtle space-y-1">
-        <h1 className="font-serif text-2xl font-bold text-plum-900">
-          Clinical Laboratory Reports & Documents
-        </h1>
-        <p className="text-xs text-slate-500">
-          Store laboratory test results and diagnostic documents. Results are securely preserved with full provenance.
-        </p>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-3xl border border-ivory-300 shadow-subtle">
+        <div className="space-y-1">
+          <h1 className="font-serif text-2xl font-bold text-plum-900">
+            Clinical Laboratory Reports & Documents
+          </h1>
+          <p className="text-xs text-slate-500">
+            Store laboratory test results and diagnostic documents. Results are securely preserved with full provenance.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setRecalibrationOpen(true)}
+          className="flex items-center gap-1.5 px-3.5 py-2 bg-plum-800 hover:bg-plum-700 text-white rounded-xl text-xs font-semibold shadow-subtle transition-colors"
+        >
+          <UserCheck className="w-3.5 h-3.5 text-rose-300" />
+          <span>Doctor Consultation Outcome (Recalibration)</span>
+        </button>
       </div>
+
+      {/* U07 & U08: Laboratory & Imaging Scheduling Guardrails */}
+      <LabScheduleWidget />
 
       {/* Safety Notice */}
       <div className="p-4 bg-plum-50/70 border border-plum-200 rounded-2xl text-xs space-y-1">
@@ -361,6 +378,14 @@ export const ClinicalReportsPage: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* U10: Bayesian Recalibration Modal */}
+      <ConsultationRecalibrationModal
+        isOpen={recalibrationOpen}
+        onClose={() => setRecalibrationOpen(false)}
+        onSuccess={() => loadData()}
+      />
     </div>
   )
 }
+
