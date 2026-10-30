@@ -373,3 +373,4 @@ export const RppgScannerModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }
     </div>
   )
 }
+

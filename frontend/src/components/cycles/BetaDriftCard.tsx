@@ -70,3 +70,4 @@ export const BetaDriftCard: React.FC<Props> = ({ betaDrift }) => {
     </div>
   )
 }
+

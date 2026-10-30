@@ -132,3 +132,4 @@ class LabSchedulingService:
         })
 
         return schedule
+

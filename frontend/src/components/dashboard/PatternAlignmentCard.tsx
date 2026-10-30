@@ -98,3 +98,4 @@ export const PatternAlignmentCard: React.FC<Props> = ({ pai }) => {
     </div>
   )
 }
+

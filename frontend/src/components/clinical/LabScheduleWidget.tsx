@@ -80,3 +80,4 @@ export const LabScheduleWidget: React.FC = () => {
     </div>
   )
 }
+

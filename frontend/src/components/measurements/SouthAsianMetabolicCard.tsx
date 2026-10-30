@@ -129,3 +129,4 @@ export const SouthAsianMetabolicCard: React.FC<Props> = ({ latestMeasurement, is
     </div>
   )
 }
+

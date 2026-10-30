@@ -112,3 +112,4 @@ export const PhaseCheckinWidget: React.FC<Props> = ({ onQuickLogSuccess }) => {
     </div>
   )
 }
+
