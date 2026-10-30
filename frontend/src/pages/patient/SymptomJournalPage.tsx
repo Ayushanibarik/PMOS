@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Activity, Plus, Trash2, TrendingUp, TrendingDown, Minus, Sparkles, Mic, Scissors } from 'lucide-react'
+import { Activity, Plus, Trash2, TrendingUp, TrendingDown, Minus, Mic, Scissors } from 'lucide-react'
 import { api } from '../../services/api'
 import { SymptomEntry, SymptomCatalogueItem, SymptomTrendItem } from '../../types'
 import { VernacularVoiceModal } from '../../components/symptoms/VernacularVoiceModal'
@@ -128,7 +128,7 @@ export const SymptomJournalPage: React.FC = () => {
             className="flex items-center gap-1.5 px-3 py-2 bg-plum-800 hover:bg-plum-700 text-white rounded-xl text-xs font-semibold shadow-subtle transition-colors"
           >
             <Scissors className="w-3.5 h-3.5 text-rose-300" />
-            <span>RVI Grooming Calculator</span>
+            <span>Hair Regrowth & Grooming Log</span>
           </button>
         </div>
       </div>

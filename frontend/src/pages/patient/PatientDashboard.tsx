@@ -9,7 +9,6 @@ import {
   FileText, 
   Plus, 
   Share2, 
-  Sparkles,
   Clock,
   ArrowRight
 } from 'lucide-react'
@@ -221,7 +220,7 @@ export const PatientDashboard: React.FC = () => {
           {/* Prediction Window Box */}
           <div className="bg-plum-900 text-ivory-100 p-6 rounded-3xl space-y-3 shadow-card">
             <div className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-rose-300" />
+              <Clock className="w-4 h-4 text-rose-300" />
               <h3 className="font-serif font-bold text-base text-white">
                 Next Period Window
               </h3>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Heart, Eye, EyeOff, Lock, Mail, ArrowRight, Sparkles } from 'lucide-react'
+import { Heart, Eye, EyeOff, Lock, Mail, ArrowRight, ShieldCheck } from 'lucide-react'
 import { api } from '../../services/api'
 
 interface LoginPageProps {
@@ -123,7 +123,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
         {/* Demo Fast Login Box */}
         <div className="pt-4 border-t border-ivory-200 space-y-2">
           <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-            <Sparkles className="w-3.5 h-3.5 text-rose-400" />
+            <ShieldCheck className="w-3.5 h-3.5 text-rose-400" />
             <span>Development Demonstration Logins</span>
           </div>
           <div className="grid grid-cols-3 gap-2">

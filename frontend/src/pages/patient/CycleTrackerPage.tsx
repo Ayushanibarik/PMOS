@@ -7,7 +7,7 @@ import {
   CheckCircle2, 
   ChevronLeft, 
   ChevronRight,
-  Sparkles
+  Clock
 } from 'lucide-react'
 import { api } from '../../services/api'
 import { MenstrualPeriod, CycleAnalytics } from '../../types'
@@ -195,7 +195,7 @@ export const CycleTrackerPage: React.FC = () => {
                     <span className="w-1.5 h-1.5 rounded-full bg-white" />
                   )}
                   {isInPrediction && !periodEntry && !isInBleedingSpan && (
-                    <Sparkles className="w-3 h-3 text-lavender-500" />
+                    <Clock className="w-3 h-3 text-lavender-500" />
                   )}
                 </div>
 

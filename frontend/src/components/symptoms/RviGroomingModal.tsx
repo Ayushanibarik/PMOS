@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Sparkles, X, Calculator, ShieldCheck, CheckCircle2 } from 'lucide-react'
+import { Scissors, X, Calculator, ShieldCheck, CheckCircle2 } from 'lucide-react'
 import { api } from '../../services/api'
 import { RviCalculationResponse } from '../../types'
 
@@ -19,12 +19,12 @@ export const RviGroomingModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }
   const [isSaving, setIsSaving] = useState(false)
 
   const itaCategories = [
-    { label: 'Very Light (>55°)', value: 60.0 },
-    { label: 'Light (41° - 55°)', value: 48.0 },
-    { label: 'Intermediate (28° - 41°)', value: 34.0 },
-    { label: 'Tan (10° - 28°)', value: 18.0 },
-    { label: 'Brown (-30° - 10°)', value: -5.0 },
-    { label: 'Dark (<= -30°)', value: -40.0 }
+    { label: 'Very Fair / Light Skin Tone', value: 60.0 },
+    { label: 'Fair Skin Tone', value: 48.0 },
+    { label: 'Medium / Olive Skin Tone', value: 34.0 },
+    { label: 'Tan Skin Tone (Common in South Asian populations)', value: 18.0 },
+    { label: 'Brown / Deep Skin Tone', value: -5.0 },
+    { label: 'Very Dark Skin Tone', value: -40.0 }
   ]
 
   const handleCompute = async () => {
@@ -83,20 +83,19 @@ export const RviGroomingModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }
 
         <div className="flex items-center gap-2 mb-3">
           <div className="p-2 bg-rose-100 rounded-xl text-rose-600">
-            <Sparkles className="w-5 h-5" />
+            <Scissors className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-plum-900">Regrowth Velocity Index (RVI)</h3>
-            <p className="text-xs text-slate-500">Cosmetic grooming compensation & melanin-aware contrast calibration</p>
+            <h3 className="text-lg font-bold text-plum-900">Hair Regrowth & Grooming Log</h3>
+            <p className="text-xs text-slate-500">Grooming adjustment for cosmetic routines (threading, waxing)</p>
           </div>
         </div>
 
         {/* Explainability Callout */}
         <div className="bg-lavender-50 border border-lavender-200 rounded-xl p-3 mb-4 text-xs text-slate-600">
           <p>
-            Standard apps fail to account for regular cosmetic grooming (threading, waxing, laser).
-            RVI mathematically normalizes observed hair visibility against time elapsed since grooming,
-            providing accurate longitudinal velocity rather than misleading single-day snapshots.
+            Cosmetic grooming (such as threading, waxing, or plucking) can mask natural regrowth patterns.
+            This tool adjusts your recorded symptoms based on days since your last routine so your health log reflects your true pattern over time.
           </p>
         </div>
 
@@ -154,7 +153,7 @@ export const RviGroomingModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }
 
           <div>
             <label className="text-xs font-bold text-slate-700 block mb-1">
-              Inner-Wrist Skin Tone Calibration (ITA°)
+              Skin Tone Category (for image contrast calibration)
             </label>
             <select
               value={itaAngle}
@@ -168,7 +167,7 @@ export const RviGroomingModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }
               ))}
             </select>
             <span className="text-[11px] text-slate-400 block mt-1">
-              Calibrates computer vision contrast without ethnic assumptions.
+              Used to accurately assess visual contrast across diverse natural skin tones.
             </span>
           </div>
 
@@ -179,14 +178,14 @@ export const RviGroomingModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }
             className="w-full py-2.5 bg-plum-800 hover:bg-plum-900 text-white text-xs font-semibold rounded-xl shadow-sm transition flex items-center justify-center gap-1.5"
           >
             <Calculator className="w-4 h-4" />
-            {isCalculating ? 'Computing Index...' : 'Calculate Regrowth Velocity (RVI)'}
+            {isCalculating ? 'Computing Regrowth Pattern...' : 'Check Regrowth Pattern'}
           </button>
         </div>
 
         {rviResult && (
           <div className="bg-rose-50 border border-rose-200 rounded-xl p-4 mb-4 animate-fade-in">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-bold text-rose-900 uppercase">Computed RVI Score</span>
+              <span className="text-xs font-bold text-rose-900 uppercase">Regrowth Rate Assessment</span>
               <span
                 className={`text-xs px-2.5 py-0.5 rounded-full font-bold uppercase ${
                   rviResult.growth_velocity_category === 'elevated'
@@ -196,15 +195,15 @@ export const RviGroomingModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }
                         : 'bg-emerald-600 text-white')
                 }`}
               >
-                {rviResult.growth_velocity_category}
+                {rviResult.growth_velocity_category === 'elevated' ? 'Faster Regrowth' : (rviResult.growth_velocity_category === 'moderate' ? 'Moderate Regrowth' : 'Typical Regrowth')}
               </span>
             </div>
-            <div className="text-3xl font-extrabold text-rose-700 mb-1">
-              {rviResult.rvi_score}
+            <div className="text-sm font-semibold text-rose-900 mb-1">
+              Adjusted for {daysElapsed} days since {modality}
             </div>
             <p className="text-xs text-slate-700 mb-2">{rviResult.explanation}</p>
             <div className="text-[11px] text-slate-500 border-t border-rose-200 pt-2">
-              <b>Scientific Disclaimer:</b> {rviResult.disclaimer}
+              <b>Health Note:</b> {rviResult.disclaimer}
             </div>
           </div>
         )}
@@ -225,7 +224,7 @@ export const RviGroomingModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }
               className="px-5 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold rounded-xl shadow-md transition flex items-center gap-1.5"
             >
               <CheckCircle2 className="w-4 h-4" />
-              {isSaving ? 'Saving...' : 'Log RVI Observation'}
+              {isSaving ? 'Saving...' : 'Save to Health Journal'}
             </button>
           )}
         </div>

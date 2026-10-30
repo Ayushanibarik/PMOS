@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Calendar, CheckCircle2, ChevronRight, X, Clock, Sparkles } from 'lucide-react'
+import { Calendar, CheckCircle2, ChevronRight, X, Clock } from 'lucide-react'
 import { api } from '../../services/api'
 import { PhaseCheckpoint } from '../../types'
 
@@ -92,7 +92,7 @@ export const PhaseCheckinWidget: React.FC<Props> = ({ onQuickLogSuccess }) => {
                 disabled={loggingCode !== null}
                 className="px-3 py-1.5 bg-white/10 hover:bg-white/20 text-xs font-medium rounded-xl border border-white/15 transition flex items-center gap-1.5 disabled:opacity-50"
               >
-                <Sparkles className="w-3 h-3 text-rose-300" />
+                <CheckCircle2 className="w-3 h-3 text-rose-300" />
                 {code.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}
               </button>
             ))}

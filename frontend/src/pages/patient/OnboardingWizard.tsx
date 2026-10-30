@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Heart, CheckCircle2, ArrowRight, ArrowLeft, ShieldCheck, Sparkles, HelpCircle } from 'lucide-react'
+import { Heart, CheckCircle2, ArrowRight, ArrowLeft, ShieldCheck, HelpCircle } from 'lucide-react'
 import { api } from '../../services/api'
 
 export const OnboardingWizard: React.FC = () => {

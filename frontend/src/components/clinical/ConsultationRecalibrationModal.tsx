@@ -74,8 +74,8 @@ export const ConsultationRecalibrationModal: React.FC<Props> = ({ isOpen, onClos
             <Stethoscope className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-plum-900">Post-Consultation Feedback Loop</h3>
-            <p className="text-xs text-slate-500">Bayesian closed-loop personalized baseline recalibration (U10)</p>
+            <h3 className="text-lg font-bold text-plum-900">Doctor Consultation Record Update</h3>
+            <p className="text-xs text-slate-500">Update your health profile and tracking baseline based on clinical assessment</p>
           </div>
         </div>
 
@@ -171,8 +171,8 @@ export const ConsultationRecalibrationModal: React.FC<Props> = ({ isOpen, onClos
             </div>
 
             <div className="bg-lavender-50 border border-lavender-200 rounded-xl p-3 text-xs text-slate-600">
-              <b>Bayesian Safety Guarantee:</b> Recalibration adjusts only your individual longitudinal monitoring baseline;
-              it does NOT retrain the core platform model or alter global clinical guidelines. Full audit rollback is supported.
+              <b>Privacy & Safety Guarantee:</b> Updating your consultation outcome personalizes your own records only.
+              It securely aligns your health dashboard with your doctor's observations, and you can undo this update anytime.
             </div>
 
             <div className="flex justify-end gap-2 pt-2">
@@ -189,7 +189,7 @@ export const ConsultationRecalibrationModal: React.FC<Props> = ({ isOpen, onClos
                 className="px-5 py-2 bg-plum-800 hover:bg-plum-900 text-white text-xs font-semibold rounded-xl shadow-md transition flex items-center gap-1.5 disabled:opacity-50"
               >
                 <CheckCircle2 className="w-4 h-4" />
-                {isSubmitting ? 'Recalibrating...' : 'Record Outcome & Recalibrate'}
+                {isSubmitting ? 'Updating...' : 'Save Consultation Record'}
               </button>
             </div>
           </form>
@@ -198,21 +198,21 @@ export const ConsultationRecalibrationModal: React.FC<Props> = ({ isOpen, onClos
             <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-center">
               <CheckCircle2 className="w-8 h-8 text-emerald-600 mx-auto mb-2" />
               <h4 className="text-sm font-bold text-emerald-900">
-                Personal Baseline Recalibrated Successfully
+                Personal Health Record Updated Successfully
               </h4>
               <p className="text-xs text-emerald-700 mt-1">
-                Your longitudinal tracking thresholds have been updated via Bayesian likelihood ratio ({outcomeResult.likelihood_ratio}x).
+                Your longitudinal tracking profile has been updated to reflect your doctor's diagnosis and guidance.
               </p>
             </div>
 
             <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 flex items-center justify-around text-center">
               <div>
-                <span className="text-[11px] text-slate-500 block">Prior PAI Score</span>
+                <span className="text-[11px] text-slate-500 block">Previous Record Baseline</span>
                 <span className="text-xl font-bold text-slate-700">{outcomeResult.prior_alignment_score}%</span>
               </div>
               <ArrowRight className="w-5 h-5 text-slate-400" />
               <div>
-                <span className="text-[11px] text-slate-500 block">Posterior PAI Score</span>
+                <span className="text-[11px] text-slate-500 block">Updated Profile Baseline</span>
                 <span className="text-xl font-bold text-plum-900">{outcomeResult.posterior_alignment_score}%</span>
               </div>
             </div>

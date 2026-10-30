@@ -260,8 +260,8 @@ export const RppgScannerModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }
             <Camera className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-plum-900">Zero-Hardware Camera rPPG Biomarkers</h3>
-            <p className="text-xs text-slate-500">Research estimate: Resting Heart Rate & HRV (RMSSD)</p>
+            <h3 className="text-lg font-bold text-plum-900">Resting Pulse & Rhythm Check</h3>
+            <p className="text-xs text-slate-500">Camera-assisted estimate: Resting Pulse & Rhythm Variability</p>
           </div>
         </div>
 
@@ -338,9 +338,9 @@ export const RppgScannerModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }
                 <span className="text-xs text-slate-400 block">bpm</span>
               </div>
               <div className="bg-white p-3 rounded-lg shadow-sm border border-lavender-100">
-                <span className="text-xs text-slate-500 block">HRV (RMSSD)</span>
+                <span className="text-xs text-slate-500 block">Pulse Rhythm Variability</span>
                 <span className="text-2xl font-bold text-plum-800">{hrvEstimate.rmssd}</span>
-                <span className="text-xs text-slate-400 block">ms (Research)</span>
+                <span className="text-xs text-slate-400 block">ms (beat-to-beat variation)</span>
               </div>
             </div>
             <p className="text-[11px] text-slate-500 mt-2 text-center">

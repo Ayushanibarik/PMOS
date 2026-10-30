@@ -203,3 +203,51 @@ def test_revoked_clinician_access_enforcement():
     # Clinician attempts to access record again after revocation
     check_patients = client.get("/api/v1/clinicians/patients", headers=c_headers).json()
     assert not any(p["patient_id"] == code_res.json()["patient_id"] for p in check_patients)
+
+    # Direct detail access after revocation must return 403 Forbidden
+    detail_res = client.get(f"/api/v1/clinicians/patients/{code_res.json()['patient_id']}", headers=c_headers)
+    assert detail_res.status_code == 403
+
+def test_strict_role_based_access_control_rbac():
+    """Verify mandatory backend RBAC enforcement:
+    1. Patient cannot access clinician-only endpoints (403 Forbidden)
+    2. Clinician cannot access an unconsented patient's deep records (403 Forbidden)
+    """
+    p_email = f"p_rbac_{secrets.token_hex(4)}@example.com"
+    c_email = f"c_rbac_{secrets.token_hex(4)}@example.com"
+    pw = "Password123!"
+
+    # 1. Register Patient
+    p_res = client.post("/api/v1/auth/register", json={
+        "email": p_email, "password": pw, "full_name": "RBAC Patient", "role": "patient"
+    })
+    p_token = p_res.json()["access_token"]
+    p_headers = {"Authorization": f"Bearer {p_token}"}
+
+    # 2. Register Clinician
+    c_res = client.post("/api/v1/auth/register", json={
+        "email": c_email, "password": pw, "full_name": "RBAC Doctor", "role": "clinician"
+    })
+    c_token = c_res.json()["access_token"]
+    c_headers = {"Authorization": f"Bearer {c_token}"}
+
+    # Patient attempts to access clinician-only endpoints -> 403
+    res_forbidden_1 = client.get("/api/v1/clinicians/patients", headers=p_headers)
+    assert res_forbidden_1.status_code == 403, "Patient must not access clinician patient roster"
+
+    res_forbidden_2 = client.post("/api/v1/clinicians/redeem-invite?access_code=CA-TEST", headers=p_headers)
+    assert res_forbidden_2.status_code == 403, "Patient must not redeem clinician access code"
+
+    res_forbidden_3 = client.post("/api/v1/clinicians/notes", json={
+        "patient_id": "some_id",
+        "consultation_date": "2026-10-31",
+        "general_notes": "Attempted unauthorized note",
+        "recommendation": "None"
+    }, headers=p_headers)
+    assert res_forbidden_3.status_code == 403, "Patient must not author clinician notes"
+
+    # Clinician attempts to access unconsented patient detail -> 403
+    patient_id = p_res.json().get("user_id") or p_res.json().get("id")
+    res_unauthorized_patient = client.get(f"/api/v1/clinicians/patients/{patient_id}", headers=c_headers)
+    assert res_unauthorized_patient.status_code == 403, "Clinician must not access patient without explicit valid consent"
+

@@ -1,13 +1,13 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { Sparkles, ShieldAlert, CheckCircle2, BookOpen, Stethoscope } from 'lucide-react'
+import { ShieldAlert, CheckCircle2, BookOpen, Stethoscope } from 'lucide-react'
 
 export const PcosPmosInfoPage: React.FC = () => {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-12 text-left">
       <div className="space-y-4">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold">
-          <Sparkles className="w-3.5 h-3.5" />
+          <BookOpen className="w-3.5 h-3.5" />
           <span>Clinical Terminology & Medical Science</span>
         </div>
         <h1 className="font-serif text-3xl sm:text-4xl font-bold text-plum-900">

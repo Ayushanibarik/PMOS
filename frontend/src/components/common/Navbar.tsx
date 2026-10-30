@@ -9,8 +9,7 @@ import {
   User as UserIcon, 
   Stethoscope, 
   ShieldCheck, 
-  LogOut,
-  Sparkles
+  LogOut
 } from 'lucide-react'
 import { api } from '../../services/api'
 
@@ -107,7 +106,7 @@ export const Navbar: React.FC<NavbarProps> = ({ user, onLogout }) => {
                 className="flex items-center gap-1.5 px-2.5 py-1.5 bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 rounded-lg text-xs font-semibold transition-colors"
                 title="Quick switch demonstration accounts"
               >
-                <Sparkles className="w-3.5 h-3.5 text-rose-500" />
+                <UserIcon className="w-3.5 h-3.5 text-rose-600" />
                 <span>Demo Accounts</span>
               </button>
 
